@@ -1,8 +1,13 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production'
+
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export',
-  basePath: '/schellingpointdemo',
+  // Only use static export and basePath for production builds (GitHub Pages)
+  ...(isProd && {
+    output: 'export',
+    basePath: '/schellingpointdemo',
+  }),
   images: {
     unoptimized: true,
   },
