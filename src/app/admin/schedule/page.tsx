@@ -115,6 +115,8 @@ export default function AdminSchedulePage() {
   const [draggedSession, setDraggedSession] = React.useState<ScheduleSession | null>(null)
   const [showPreview, setShowPreview] = React.useState(false)
   const [hasChanges, setHasChanges] = React.useState(false)
+  const [isPublished, setIsPublished] = React.useState(false)
+  const [isEditing, setIsEditing] = React.useState(false)
 
   const handleGenerate = () => {
     setIsGenerating(true)
@@ -148,6 +150,7 @@ export default function AdminSchedulePage() {
 
   const handleDrop = (venueId: string, slotId: string) => {
     if (!draggedSession) return
+    if (isPublished && !isEditing) return // Can't edit when published and not in edit mode
 
     setSessions(prev => prev.map(s =>
       s.id === draggedSession.id
@@ -159,12 +162,25 @@ export default function AdminSchedulePage() {
   }
 
   const handleRemoveFromSchedule = (sessionId: string) => {
+    if (isPublished && !isEditing) return // Can't edit when published and not in edit mode
+
     setSessions(prev => prev.map(s =>
       s.id === sessionId
         ? { ...s, venueId: undefined, slotId: undefined }
         : s
     ))
     setHasChanges(true)
+  }
+
+  const handlePublish = () => {
+    setIsPublished(true)
+    setIsEditing(false)
+    setHasChanges(false)
+    setShowPreview(false)
+  }
+
+  const handleEditSchedule = () => {
+    setIsEditing(true)
   }
 
   const getSessionForCell = (venueId: string, slotId: string) => {
@@ -205,11 +221,11 @@ export default function AdminSchedulePage() {
         {!generated && !isGenerating && (
           <Button onClick={handleGenerate}>
             <Play className="h-4 w-4 mr-2" />
-            Run Algorithm
+            Auto-Generate Schedule
           </Button>
         )}
 
-        {generated && (
+        {generated && !isPublished && (
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => { setGenerated(false); setProgress(0); setSessions(initialSessions); setHasChanges(false); }}>
               <RefreshCw className="h-4 w-4 mr-2" />
@@ -224,6 +240,37 @@ export default function AdminSchedulePage() {
             <Button onClick={() => setShowPreview(true)}>
               <Send className="h-4 w-4 mr-2" />
               Publish Schedule
+            </Button>
+          </div>
+        )}
+
+        {isPublished && !isEditing && (
+          <div className="flex gap-2">
+            <Badge variant="success" className="px-3 py-1.5">
+              <CheckCircle className="h-3 w-3 mr-1" />
+              Published
+            </Badge>
+            <Button onClick={handleEditSchedule}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Edit Schedule
+            </Button>
+          </div>
+        )}
+
+        {isPublished && isEditing && (
+          <div className="flex gap-2">
+            <Badge variant="secondary" className="px-3 py-1.5">
+              Editing Mode
+            </Badge>
+            {hasChanges && (
+              <Button variant="outline" onClick={() => setHasChanges(false)}>
+                <Save className="h-4 w-4 mr-2" />
+                Save Draft
+              </Button>
+            )}
+            <Button onClick={() => setShowPreview(true)}>
+              <Send className="h-4 w-4 mr-2" />
+              Publish Changes
             </Button>
           </div>
         )}
@@ -583,12 +630,9 @@ export default function AdminSchedulePage() {
               <Button variant="outline" onClick={() => setShowPreview(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => {
-                setShowPreview(false)
-                // Would trigger publish action
-              }}>
+              <Button onClick={handlePublish}>
                 <Send className="h-4 w-4 mr-2" />
-                Publish Schedule
+                {isEditing ? 'Publish Changes' : 'Publish Schedule'}
               </Button>
             </div>
           </div>

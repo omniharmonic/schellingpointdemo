@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Mic, Wrench, MessageSquare, Users, Monitor, ChevronRight, Heart } from 'lucide-react'
+import { Mic, Wrench, MessageSquare, Users, Monitor, ChevronRight, Heart, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -24,6 +24,12 @@ interface SessionCardProps {
     votes?: number
     userVotes?: number
     isFavorited?: boolean
+    venue?: {
+      name: string
+      capacity?: number
+      features?: string[]
+    }
+    scheduledTime?: string
   }
   remainingCredits: number
   onVote?: (sessionId: string, votes: number) => void
@@ -125,6 +131,44 @@ export function SessionCard({
                 {tag}
               </Badge>
             ))}
+          </div>
+        )}
+
+        {/* Venue Information - Prominently Displayed */}
+        {session.venue && (
+          <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm">
+                  {session.venue.name}
+                </div>
+                {session.venue.capacity && (
+                  <div className="text-xs text-muted-foreground">
+                    Capacity: {session.venue.capacity}
+                  </div>
+                )}
+              </div>
+              {session.scheduledTime && (
+                <Badge variant="default" className="text-xs whitespace-nowrap">
+                  {session.scheduledTime}
+                </Badge>
+              )}
+            </div>
+            {session.venue.features && session.venue.features.length > 0 && (
+              <div className="flex gap-1 mt-2 flex-wrap">
+                {session.venue.features.slice(0, 3).map((feature, i) => (
+                  <Badge key={i} variant="secondary" className="text-xs">
+                    {feature}
+                  </Badge>
+                ))}
+                {session.venue.features.length > 3 && (
+                  <Badge variant="secondary" className="text-xs">
+                    +{session.venue.features.length - 3}
+                  </Badge>
+                )}
+              </div>
+            )}
           </div>
         )}
 

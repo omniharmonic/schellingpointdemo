@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Plus, Search, SlidersHorizontal, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -144,6 +145,7 @@ const sortOptions = [
 ]
 
 export default function SessionsPage() {
+  const router = useRouter()
   const [sessions, setSessions] = React.useState(mockSessions)
   const [search, setSearch] = React.useState('')
   const [format, setFormat] = React.useState('all')
@@ -335,7 +337,7 @@ export default function SessionsPage() {
             remainingCredits={remainingCredits}
             onVote={handleVote}
             onToggleFavorite={handleToggleFavorite}
-            onViewDetail={(id) => console.log('View', id)}
+            onViewDetail={(id) => router.push(`/event/sessions/${id}`)}
           />
         ))}
       </div>

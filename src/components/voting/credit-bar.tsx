@@ -32,7 +32,7 @@ export function CreditBar({
     <div className={cn('space-y-1.5', className)}>
       {showLabel && (
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Credits</span>
+          <span className="text-muted-foreground">Voting Credits Remaining</span>
           <span className="font-medium tabular-nums">
             {remaining}/{total}
           </span>

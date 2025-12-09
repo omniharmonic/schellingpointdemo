@@ -56,13 +56,20 @@ export function Navbar({
 
         <div className="flex items-center gap-4">
           {credits && (
-            <div className="hidden sm:block w-32">
+            <div className="hidden lg:block min-w-48">
               <CreditBar
                 total={credits.total}
                 spent={credits.spent}
                 size="sm"
-                showLabel={false}
+                showLabel={true}
               />
+            </div>
+          )}
+          {credits && (
+            <div className="hidden sm:block lg:hidden">
+              <div className="text-xs text-muted-foreground">
+                <span className="font-medium">{credits.total - credits.spent}</span> credits
+              </div>
             </div>
           )}
 

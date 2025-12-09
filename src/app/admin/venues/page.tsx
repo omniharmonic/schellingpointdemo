@@ -114,6 +114,10 @@ export default function AdminVenuesPage() {
   const [venueCapacity, setVenueCapacity] = React.useState('')
   const [venueFeatures, setVenueFeatures] = React.useState<string[]>([])
 
+  // Custom features state - persists across the app
+  const [customFeatures, setCustomFeatures] = React.useState<string[]>([])
+  const [newFeatureName, setNewFeatureName] = React.useState('')
+
   // Form state for time slots
   const [slotStart, setSlotStart] = React.useState('')
   const [slotEnd, setSlotEnd] = React.useState('')
@@ -211,6 +215,18 @@ export default function AdminVenuesPage() {
         : [...prev, feature]
     )
   }
+
+  const handleAddCustomFeature = () => {
+    if (!newFeatureName.trim()) return
+    const formattedName = newFeatureName.trim().toLowerCase().replace(/\s+/g, '_')
+    if (!customFeatures.includes(formattedName) && !allFeatures.includes(formattedName)) {
+      setCustomFeatures(prev => [...prev, formattedName])
+      setVenueFeatures(prev => [...prev, formattedName])
+      setNewFeatureName('')
+    }
+  }
+
+  const allAvailableFeatures = [...allFeatures, ...customFeatures]
 
   const daySlots = timeSlots.filter(s => s.day === selectedDay).sort((a, b) => a.startTime.localeCompare(b.startTime))
   const totalCapacity = venues.reduce((sum, v) => sum + v.capacity, 0)
@@ -451,8 +467,10 @@ export default function AdminVenuesPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Features</label>
               <div className="grid grid-cols-2 gap-2">
-                {allFeatures.map(feature => {
+                {allAvailableFeatures.map(feature => {
                   const Icon = featureIcons[feature]
+                  const isCustom = customFeatures.includes(feature)
+                  const displayName = featureLabels[feature] || feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
                   return (
                     <label
                       key={feature}
@@ -466,10 +484,35 @@ export default function AdminVenuesPage() {
                         onCheckedChange={() => toggleFeature(feature)}
                       />
                       {Icon && <Icon className="h-4 w-4" />}
-                      <span className="text-sm">{featureLabels[feature]}</span>
+                      <span className="text-sm flex-1">{displayName}</span>
+                      {isCustom && <Badge variant="secondary" className="text-xs">Custom</Badge>}
                     </label>
                   )
                 })}
+              </div>
+
+              {/* Add Custom Feature */}
+              <div className="pt-3 border-t">
+                <label className="text-sm font-medium block mb-2">Add Custom Feature</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="e.g., Stage Lighting, Coffee Machine"
+                    value={newFeatureName}
+                    onChange={(e) => setNewFeatureName(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddCustomFeature()}
+                    className="flex-1 h-9 rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleAddCustomFeature}
+                    disabled={!newFeatureName.trim()}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add
+                  </Button>
+                </div>
               </div>
             </div>
 

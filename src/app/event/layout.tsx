@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Presentation, Calendar, ClipboardList, Heart, PlusCircle, BarChart3 } from 'lucide-react'
+import { Presentation, Calendar, ClipboardList, Heart, BarChart3, FileText, Users } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
 import { TabsNav } from '@/components/layout/tabs-nav'
 import { Container } from '@/components/layout/container'
@@ -21,6 +21,11 @@ const tabs = [
     badge: 24,
   },
   {
+    label: 'My Sessions',
+    href: '/event/my-sessions',
+    icon: <FileText className="h-4 w-4" />,
+  },
+  {
     label: 'Schedule',
     href: '/event/schedule',
     icon: <Calendar className="h-4 w-4" />,
@@ -36,9 +41,9 @@ const tabs = [
     icon: <ClipboardList className="h-4 w-4" />,
   },
   {
-    label: 'Propose',
-    href: '/event/propose',
-    icon: <PlusCircle className="h-4 w-4" />,
+    label: 'Participants',
+    href: '/event/participants',
+    icon: <Users className="h-4 w-4" />,
   },
 ]
 
